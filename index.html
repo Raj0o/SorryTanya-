@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>For Tanya</title>
+  <meta name="description" content="A little letter for Tanya." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+  <!-- Fonts: Fraunces (display serif with real personality) + Outfit (friendly UI sans) + Caveat (used sparingly, just for the signature) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@300;400;500;600&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ================= LOADER ================= -->
+  <!-- A small hand-drawn heart traces itself while the page warms up -->
+  <div id="loader" class="loader" aria-hidden="true">
+    <svg class="loader-heart" viewBox="0 0 100 90" width="72" height="66">
+      <path
+        class="loader-heart-path"
+        d="M50 82
+           C 20 60, 2 40, 2 22
+           C 2 6, 16 -2, 30 6
+           C 40 12, 46 22, 50 30
+           C 54 22, 60 12, 70 6
+           C 84 -2, 98 6, 98 22
+           C 98 40, 80 60, 50 82 Z"
+        fill="none"
+      />
+    </svg>
+    <p class="loader-text">just a second&hellip;</p>
+  </div>
+
+  <!-- Background canvas: floating hearts + tiny diya glows (a nod to Varanasi) -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- The whole experience -->
+  <main id="page">
+
+    <!-- ================= HERO / ENVELOPE ================= -->
+    <section id="hero" class="section hero">
+      <p class="eyebrow">a letter, for you</p>
+      <h1 class="hero-title">Tanya<span class="hero-title-comma">,</span></h1>
+
+      <div class="envelope-wrap">
+        <button
+          id="envelope"
+          class="envelope"
+          type="button"
+          aria-label="Open the envelope to read the letter"
+        >
+          <span class="envelope-back"></span>
+          <span class="envelope-letter-peek"></span>
+          <span class="envelope-flap"></span>
+          <span class="envelope-seal">S</span>
+        </button>
+        <p class="hint">tap the envelope</p>
+      </div>
+
+      <!-- Hidden easter egg: a faint star that isn't explained anywhere -->
+      <button id="secretStar" class="secret-star" type="button" aria-label="?">&#10022;</button>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <span></span>
+      </div>
+    </section>
+
+    <!-- ================= LETTER ================= -->
+    <section id="letter-section" class="section letter-section">
+      <div class="letter-card glass" id="letterCard">
+        <div class="letter-paper">
+          <p class="letter-date">Varanasi &middot; still figuring out how to say this properly</p>
+          <p id="typewriter-text" class="typewriter-text"></p>
+          <span id="typewriter-cursor" class="typewriter-cursor">|</span>
+          <p class="signature">&mdash; Shreyansh</p>
+          <p class="skip-hint">(tap the letter to finish it instantly)</p>
+        </div>
+
+        <div class="actions" id="actions">
+          <button id="forgiveBtn" class="btn btn-forgive" type="button">
+            <span class="btn-label">&#10084;&#65039; Forgive Me</span>
+          </button>
+          <button id="angryBtn" class="btn btn-angry" type="button">
+            <span class="btn-label">&#128584; Still Angry?</span>
+          </button>
+        </div>
+
+        <p id="angryCounter" class="angry-counter" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="section footer">
+      <p>made with a few too many keyframes, for Tanya.</p>
+    </footer>
+
+  </main>
+
+  <!-- ================= SUCCESS OVERLAY ================= -->
+  <div id="successOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="successMessage">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="success-card">
+      <div class="success-heart">&#10084;&#65039;</div>
+      <p id="successMessage" class="success-message">Thank you for hearing me out &#10084;&#65039;</p>
+      <p class="success-sub">that's the whole website. the rest is up to us, whenever you're ready.</p>
+      <button id="closeOverlay" class="btn btn-quiet" type="button">close</button>
+    </div>
+  </div>
+
+  <!-- Floating quote bubble used by easter eggs -->
+  <div id="quoteBubble" class="quote-bubble hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

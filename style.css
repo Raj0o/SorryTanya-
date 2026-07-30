@@ -1,0 +1,731 @@
+/* ==========================================================================
+   DESIGN TOKENS
+   Palette: dusk plum → mauve → warm blush, inspired by a Varanasi evening
+   sky over the ghats. Kept warm and soft rather than saccharine-pink.
+   ========================================================================== */
+:root {
+  /* background gradient stops */
+  --bg-deep: #241934;
+  --bg-mid: #5b3a6e;
+  --bg-warm: #c97b86;
+  --bg-warm-light: #f2b9a8;
+
+  /* glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.10);
+  --glass-bg-strong: rgba(255, 255, 255, 0.16);
+  --glass-border: rgba(255, 255, 255, 0.28);
+
+  /* accents */
+  --accent-rose: #ff8aa1;
+  --accent-rose-deep: #e2607d;
+  --accent-gold: #ffcf8a;
+
+  /* text */
+  --text-light: #fff7f3;
+  --text-muted: #e5d6ea;
+  --paper: #fbf3e9;
+  --ink: #4a3a42;
+  --ink-soft: #8a7480;
+
+  /* type */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Outfit", "Segoe UI", sans-serif;
+  --font-script: "Caveat", cursive;
+
+  /* motion */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ==========================================================================
+   RESET
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text-light);
+  background: var(--bg-deep);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Visible, deliberate focus states everywhere (accessibility, not an afterthought) */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   ANIMATED GRADIENT BACKGROUND
+   A slow-drifting radial/linear blend that never quite resolves —
+   applied to a fixed pseudo-layer so content can scroll over it.
+   ========================================================================== */
+#page {
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 138, 161, 0.25), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(255, 207, 138, 0.18), transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(91, 58, 110, 0.55), transparent 55%),
+    linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 45%, var(--bg-warm) 78%, var(--bg-warm-light) 100%);
+  background-size: 140% 140%;
+  animation: driftGradient 22s ease-in-out infinite;
+  filter: saturate(1.05);
+}
+
+@keyframes driftGradient {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 60% 40%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ==========================================================================
+   PARTICLE CANVAS (hearts + tiny diya glows drifting upward)
+   ========================================================================== */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   LOADER
+   ========================================================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--bg-deep);
+  transition: opacity 0.7s var(--ease-out-soft), visibility 0.7s;
+}
+
+.loader.loader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-heart-path {
+  stroke: var(--accent-rose);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: drawHeart 1.6s var(--ease-in-out-soft) infinite;
+}
+
+@keyframes drawHeart {
+  0%   { stroke-dashoffset: 320; fill: rgba(255, 138, 161, 0); }
+  60%  { stroke-dashoffset: 0;   fill: rgba(255, 138, 161, 0); }
+  85%  { fill: rgba(255, 138, 161, 0.9); }
+  100% { stroke-dashoffset: 0; fill: rgba(255, 138, 161, 0.9); }
+}
+
+.loader-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   LAYOUT / SECTIONS
+   ========================================================================== */
+.section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.hero {
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.eyebrow {
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-soft) 0.3s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 5rem);
+  margin: 0 0 2.5rem;
+  color: var(--text-light);
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-soft) 0.5s forwards;
+}
+
+.hero-title-comma {
+  color: var(--accent-rose);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Envelope ---- */
+.envelope-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-soft) 0.8s forwards;
+}
+
+.envelope {
+  position: relative;
+  width: min(78vw, 300px);
+  height: min(52vw, 200px);
+  border: none;
+  background: linear-gradient(155deg, #fff2e6, #f4d9c6);
+  border-radius: 10px;
+  box-shadow:
+    0 20px 45px -18px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(255, 255, 255, 0.4) inset;
+  padding: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-out-soft);
+}
+
+.envelope:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.envelope:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+/* the two triangular side flaps + bottom pocket, built from one back layer */
+.envelope-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.envelope-back::before,
+.envelope-back::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 52%;
+  height: 100%;
+  background: linear-gradient(160deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0));
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.envelope-back::before { left: 0; }
+.envelope-back::after   { right: 0; transform: scaleX(-1); }
+
+/* the letter peeking out — slides upward when opened */
+.envelope-letter-peek {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 6%;
+  height: 78%;
+  background: var(--paper);
+  border-radius: 6px 6px 2px 2px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.12);
+  transform: translateY(6%);
+  transition: transform 0.9s 0.15s var(--ease-out-soft);
+  z-index: 1;
+}
+
+/* the flap — folds open like a real envelope */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 58%;
+  background: linear-gradient(155deg, #f7e2cf, #eccdb2);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  border-radius: 10px 10px 0 0;
+  transition: transform 0.6s var(--ease-in-out-soft);
+  z-index: 2;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+.envelope-seal {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--accent-rose-deep), #a83b56 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  color: #ffe3e9;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+  transition: transform 0.4s var(--ease-out-soft), opacity 0.4s;
+}
+
+/* Opened state */
+.envelope.is-open .envelope-flap {
+  transform: rotateX(178deg);
+}
+.envelope.is-open .envelope-seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.4) rotate(25deg);
+}
+.envelope.is-open .envelope-letter-peek {
+  transform: translateY(-58%);
+}
+.envelope.is-open {
+  pointer-events: none;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  animation: pulseHint 2.4s ease-in-out infinite;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* Secret star easter egg — barely visible on purpose */
+.secret-star {
+  position: absolute;
+  bottom: 2.2rem;
+  right: 2.2rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 1.1rem;
+  transition: color 0.4s, transform 0.4s;
+}
+.secret-star:hover {
+  color: var(--accent-gold);
+  transform: rotate(20deg) scale(1.3);
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+}
+.scroll-cue span {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 4px;
+  height: 8px;
+  background: var(--text-light);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  animation: scrollCue 1.8s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0%   { top: 6px; opacity: 1; }
+  70%  { top: 16px; opacity: 0; }
+  100% { top: 16px; opacity: 0; }
+}
+
+/* ==========================================================================
+   LETTER SECTION
+   ========================================================================== */
+.letter-section {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    0 25px 60px -25px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+.letter-card {
+  width: min(92vw, 620px);
+  border-radius: 24px;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s var(--ease-out-soft), transform 0.9s var(--ease-out-soft);
+}
+
+.letter-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.letter-paper {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.4);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 34px,
+    rgba(74, 58, 66, 0.05) 35px
+  );
+}
+
+.letter-date {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0 0 1.1rem;
+}
+
+.typewriter-text {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  margin: 0;
+  min-height: 2em;
+}
+
+.typewriter-cursor {
+  font-family: var(--font-display);
+  color: var(--accent-rose-deep);
+  animation: blinkCursor 0.9s step-end infinite;
+}
+.typewriter-cursor.cursor-done {
+  display: none;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.signature {
+  font-family: var(--font-script);
+  font-size: 1.7rem;
+  color: var(--accent-rose-deep);
+  margin: 1.5rem 0 0;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-soft);
+}
+.signature.is-visible {
+  opacity: 1;
+}
+
+.skip-hint {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  margin: 0.6rem 0 0;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.skip-hint.is-visible {
+  opacity: 0.7;
+}
+
+/* ---- Buttons ---- */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.25rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.7s var(--ease-out-soft), transform 0.7s var(--ease-out-soft);
+}
+.actions.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.9rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-light);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(10px);
+  transition: transform 0.35s var(--ease-out-soft), box-shadow 0.35s, background 0.35s;
+  isolation: isolate;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.5);
+}
+
+.btn-forgive {
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-rose-deep));
+  border-color: transparent;
+}
+
+.btn-angry {
+  position: fixed; /* becomes fixed once the chase begins, set via JS */
+}
+
+.btn-quiet {
+  background: transparent;
+  font-size: 0.8rem;
+  padding: 0.6rem 1.2rem;
+}
+
+/* Ripple element injected by JS */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  animation: rippleAnim 0.6s var(--ease-out-soft);
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes rippleAnim {
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.angry-counter {
+  margin-top: 0.9rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-height: 1.2em;
+  opacity: 0.8;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer {
+  min-height: 40vh;
+  gap: 0;
+}
+.footer p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   SUCCESS OVERLAY + CONFETTI
+   ========================================================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 12, 28, 0.55);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.5s var(--ease-out-soft);
+}
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.success-card {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  width: min(88vw, 420px);
+  animation: popIn 0.6s var(--ease-out-soft);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.success-heart {
+  font-size: 2.5rem;
+  animation: heartBeat 1.1s ease-in-out infinite;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25%      { transform: scale(1.18); }
+  40%      { transform: scale(0.96); }
+  55%      { transform: scale(1.1); }
+}
+
+.success-message {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin: 0.75rem 0 0.4rem;
+}
+.success-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+}
+
+/* ==========================================================================
+   QUOTE BUBBLE (easter egg)
+   ========================================================================== */
+.quote-bubble {
+  position: fixed;
+  z-index: 80;
+  max-width: 240px;
+  padding: 0.8rem 1.1rem;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  transition: opacity 0.4s, transform 0.4s;
+  pointer-events: none;
+}
+.quote-bubble.hidden {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* ==========================================================================
+   CURSOR TRAIL SPARKLES
+   ========================================================================== */
+.sparkle {
+  position: fixed;
+  z-index: 70;
+  pointer-events: none;
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+  animation: sparkleFade 0.9s ease-out forwards;
+}
+@keyframes sparkleFade {
+  from { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  to   { opacity: 0; transform: translateY(-18px) scale(0.4) rotate(60deg); }
+}
+
+/* ==========================================================================
+   FLOATING HEART BURST (on forgive / secret star)
+   ========================================================================== */
+.floating-heart {
+  position: fixed;
+  z-index: 75;
+  pointer-events: none;
+  animation: floatUp 2.4s ease-in forwards;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) translateX(0) scale(0.8); opacity: 1; }
+  100% { transform: translateY(-70vh) translateX(var(--drift, 20px)) scale(1.1); opacity: 0; }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+  .btn-angry.is-fleeing {
+    width: auto !important; /* let the fleeing button shrink back on mobile */
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  body::before {
+    animation: none;
+  }
+}
