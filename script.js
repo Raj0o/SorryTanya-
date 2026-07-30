@@ -184,13 +184,13 @@
 
   // The letter itself. Edit this to change the words — everything else
   // (typewriter speed, cursor, reveal) adapts automatically.
-  const LETTER_TEXT =
+ const LETTER_TEXT =
     "It's been a while since I sat down to actually say this properly — not through a joke, not through a text that dodges the point, just this.\n\n" +
-    "I keep thinking about us roaming around campus like we had somewhere to be, when really we just didn't want the conversation to end. And Varanasi — it was only supposed to be a quick dermatologist appointment, but you somehow turned a hospital waiting room into one of my favourite memories. You have a talent for that.\n\n" +
+    "I keep thinking about us roaming around campus like we had somewhere to be, when really we just didn't want the conversation to end. And that Varanasi trip — somehow you managed to turn the most ordinary errand into one of my favourite memories, just by finding something to joke about. You have a talent for that.\n\n" +
     "I also know this isn't the first time. Not exactly this, but this shape of it — where I go quiet, or careless, and you're left carrying more than you should have to. I said it wouldn't happen again. It did anyway.\n\n" +
-    "I'm not writing this to explain it away. Things at home were heavy — my mother wasn't doing well, and I was holding a lot I didn't know how to put into words — but that's context, not a pass. You still deserved better than the version of me that showed up instead.\n\n" +
+    "I'm not writing this to explain it away. Things were heavy on my end, and I was holding a lot I didn't know how to put into words — but that's context, not a pass. You still deserved better than the version of me that showed up instead.\n\n" +
     "So — I'm sorry. Actually sorry, not the kind that's just trying to end an argument quickly.\n\n" +
-    "I still owe you a joke as bad as the ones from that waiting room. Whenever you're ready.";
+    "I still owe you a joke as bad as the ones you made on that trip. Whenever you're ready.";
 
   let typewriterRunning = false;
   let typewriterDone = false;
